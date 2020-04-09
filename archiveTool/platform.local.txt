@@ -1,6 +1,6 @@
 ## Added hooks for archiving
 
-recipe.hooks.prebuild.0.pattern="{runtime.ide.path}/tools/archive/archive_metadata.cmd" "{build.source.path}" "{build.path}" "{build.project_name}.hex" "C:\Temp\Archive"
+recipe.hooks.prebuild.0.pattern="{runtime.ide.path}\tools\archive\archive_metadata.cmd" "{build.source.path}" "{build.path}" "{build.project_name}.hex" 
 
 recipe.hooks.objcopy.postobjcopy.1.pattern="{build.path}/copyhex.cmd" 
 

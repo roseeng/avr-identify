@@ -2,7 +2,9 @@
 set sketch_folder=%1
 set build_folder=%2
 set hex_file=%3
-set archive_folder=%4
+set archive_folder="C:\Temp\Archive"
+
+chcp 65001
 
 REM See http://stackoverflow.com/q/1642677/1143274
 FOR /f %%a IN ('WMIC OS GET LocalDateTime ^| FIND "."') DO SET DTS=%%a
