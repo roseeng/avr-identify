@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace avr_identify
 {
@@ -9,8 +10,40 @@ namespace avr_identify
             if (args.Length < 2 || args.Length > 2)
                 Usage();
 
-            var sourcefile = new Hexfile(args[0]);
-            var targetfile = new Hexfile(args[1]);
+            var targetfile = args[0];
+            var sourcefiles = Directory.GetFiles(args[1], "*.hex");
+
+            foreach (var sourcefile in sourcefiles)
+            {
+                if (Compare(sourcefile, targetfile))
+                {
+                    Console.WriteLine("Matching archive file: " + sourcefile);
+                    var metadata = Path.Combine( Path.GetDirectoryName(sourcefile), Path.GetFileNameWithoutExtension(sourcefile) + ".txt");
+                    if (File.Exists(metadata))
+                    {
+                        using (var sr = new StreamReader(metadata))
+                        {
+                            var text = sr.ReadToEnd();
+                            Console.WriteLine(text);
+                            Console.WriteLine("--------------------------------------");
+                        }
+                    }
+                }
+            }
+
+            /*
+            if (files_are_equal)
+                Environment.Exit(0);
+            else
+                Environment.Exit(1);
+            */
+        }
+
+        static bool Compare(string sourcename, string targetname, bool verbose = false)
+        {
+
+            var sourcefile = new Hexfile(sourcename);
+            var targetfile = new Hexfile(targetname);
 
             int sectionNo = 1;
             bool files_are_equal = true;
@@ -24,21 +57,21 @@ namespace avr_identify
 
                 if (target == null)
                 {
-                    Console.WriteLine($"Target ended prematurely on section {sectionNo}");
+                    if (verbose) Console.WriteLine($"Target ended prematurely on section {sectionNo}");
                     files_are_equal = false;
                     break;
                 }
 
                 if (source.address != target.address)
                 {
-                    Console.WriteLine($"Differing addresses on section {sectionNo}: source {source.address}, target {target.address}");
+                    if (verbose) Console.WriteLine($"Differing addresses on section {sectionNo}: source {source.address}, target {target.address}");
                     files_are_equal = false;
                     break;
                 }
 
                 if (source.data.Length > target.data.Length)
                 {
-                    Console.WriteLine($"Target section to short {sectionNo}: source {source.data.Length} bytes, target {target.data.Length} bytes");
+                    if (verbose) Console.WriteLine($"Target section to short {sectionNo}: source {source.data.Length} bytes, target {target.data.Length} bytes");
                     files_are_equal = false;
                     break;
                 }
@@ -49,7 +82,7 @@ namespace avr_identify
                     var tb = target.data[i];
                     if (sb != tb)
                     {
-                        Console.WriteLine($"Target differs on section {sectionNo}, byte {i}");
+                        if (verbose) Console.WriteLine($"Target differs on section {sectionNo}, byte {i}");
                         files_are_equal = false;
                         break;
                     }
@@ -57,16 +90,15 @@ namespace avr_identify
             }
 
             if (files_are_equal)
-                Environment.Exit(0);
+                return true;
             else
-                Environment.Exit(1);
-
+                return false;
         }
 
         static void Usage()
         {
-            Console.Error.WriteLine("Usage: avr-identify <file1> <file2>");
-            Console.Error.WriteLine("to test the data in file2, truncated to the lengths of data in file1");
+            Console.Error.WriteLine("Usage: avr-identify <file> <archive folder>");
+            Console.Error.WriteLine("to test the data in <file> against all hex files in <archive folder>");
             Environment.Exit(1);
         }
     }
