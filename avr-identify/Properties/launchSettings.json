@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "avr-identify": {
+      "commandName": "Project",
+      "commandLineArgs": "Blink.ino.standard.hex unknown.hex"
+    }
+  }
+}
