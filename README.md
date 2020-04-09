@@ -15,7 +15,7 @@ Later, the avr-identyfy tool can be used to find what source code was used for t
 To identify a device, you start by getting the binary from it. On a normal Arduino you will probably use avrdude.
 For an Arduino Uno the command is something like:
 
-´´´avrdude TBD TBD -U flash:r:unknown.hex:hex´´´
+```arduino-ide\arduino-1.8.12\hardware\tools\avr/bin/avrdude -CC:\Toys\arduino-ide\arduino-1.8.12\hardware\tools\avr/etc/avrdude.conf -v -patmega328p -carduino -PCOM6 -b115200 -D -Uflash:r:unknown.hex:i```
 
 Then you compare the file unknown.hex to the files in the archive. The structure of a hex file can be different for the same data, and the file you just read will be bigger than the original (the size of the flash), that's where avr-identify comes in.
 
